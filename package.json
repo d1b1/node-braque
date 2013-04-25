@@ -1,6 +1,6 @@
 {
-  "name": "node-braque",
-  "version": "0.0.1",
+  "name": "braque",
+  "version": "0.0.2",
   "author": "Stephan Smith <Stephan.Smith.BC93@gmail.com>",
   "description": "Abstracter for external APIs.",
   "repository": {
@@ -15,8 +15,6 @@
   ],
   "main": ".",
   "dependencies": {
-    "optimist": "~0.3.7",
-    "moment": "~2.0.0",
     "underscore": "~1.4.4",
     "cryptojs": "~2.5.3"
   }
