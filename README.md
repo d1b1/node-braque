@@ -1,4 +1,4 @@
-node-braque
+Braque
 ===========
 
 Node.js API abstracter. Provides a simple way to implement and consume any API; github, twitter, etc. This
@@ -68,6 +68,7 @@ With Username and Password Authentcation.
 3. Abstracting the Auth pattern to allow for custom Auth Handlers.
 4. Tests
 5. Code assists. Looking for a way to generate local docs files to speed up development.
+6. Review the way the code handles APIs that expect query values. 
 
 ### Route file format
 The route file provides the glue for any API abstraction. It tells braque about the endpoint infomation, protocal
@@ -84,5 +85,5 @@ a node developer with a simple pattern to use when there is a need to integrate 
 server needed the ability to interact with specific portions of the github api. Once I started work on the formagg.io the github
 pattern was a logic place to start.
 
-Thanks [ajaxorg]|https://github.com/ajaxorg
+Thanks [ajaxorg]https://github.com/ajaxorg
 
