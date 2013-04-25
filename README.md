@@ -5,6 +5,20 @@ Node.js API abstracter. Provides a simple way to implement and consume any API; 
 project grow out of the patterns in the ajaxorg/node-github project. This projects lets a developer implement
 all or parts of other APIs without the need for more API specific packages.
 
+Goals:
+* Fewer API specific NPM dependencies.
+* Standardized HTTP/HTTPS best practices for external APIs.
+* Easier to share API version with consumers.
+* Smaller codebases on Heroku.
+
+### Available APIs
+The following is a list of APIs available in in the APIS folder.
+
+* Github v 3.0 API
+* Twitter v 1.1 API
+
+If you have an API file to add feel free to email or make a pull request.
+
 ### Install
 To install this package use the following
 
@@ -69,6 +83,7 @@ With Username and Password Authentcation.
 4. Tests
 5. Code assists. Looking for a way to generate local docs files to speed up development.
 6. Review the way the code handles APIs that expect query values. 
+7. Swagger Route file generator.
 
 ### Route file format
 The route file provides the glue for any API abstraction. It tells braque about the endpoint infomation, protocal
