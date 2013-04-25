@@ -1,0 +1,23 @@
+{
+  "name": "node-braque",
+  "version": "0.0.1",
+  "author": "Stephan Smith <Stephan.Smith.BC93@gmail.com>",
+  "description": "Abstracter for external APIs.",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/d1b1/node-braque.git"
+  },
+  "licenses": [
+    {
+      "type": "The MIT License",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "main": ".",
+  "dependencies": {
+    "optimist": "~0.3.7",
+    "moment": "~2.0.0",
+    "underscore": "~1.4.4",
+    "cryptojs": "~2.5.3"
+  }
+}
