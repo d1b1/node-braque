@@ -1,6 +1,6 @@
 {
   "name": "braque",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Stephan Smith <Stephan.Smith.BC93@gmail.com>",
   "description": "Abstracter for external APIs.",
   "repository": {
