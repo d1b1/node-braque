@@ -75,6 +75,27 @@ With Username and Password Authentcation.
 
 ```
 
+### Request Callbacks
+Callbacks in the API call process are for custom changes needed for specific APIs.
+
+The following is an example of a header callback that will run after the request
+headers have been setup. It will allow the API implimentation to define a value 
+needed by the Heroku API. This might need to get moved to the API route file.
+
+```
+  var heroku = new Braque({
+    version: "2.0.0",
+    routeFile: "./heroku/heroku.json",
+
+    // Use callbacks to provide access to the request before it is send.
+    callbacks: {
+      header: function(headers) {
+        headers.Accept= "application/vnd.heroku+json; version=3";
+      }
+    }
+  });
+```
+
 ### Coming Soon
 
 1. Adding the twitter routes file.

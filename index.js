@@ -14,6 +14,7 @@ var Client = module.exports = function(config) {
    this.config = config;
    this.debug = Util.isTrue(config.debug);
 
+   this.callbacks = config.callbacks || {};
    this.version = config.version;
 
    this.routes  = JSON.parse(Fs.readFileSync(config.routeFile, 'utf8'));;
@@ -615,6 +616,11 @@ var Client = module.exports = function(config) {
            method: method,
            headers: headers
        };
+
+       // If we have a header callback.
+       if (this.callbacks && typeof this.callbacks.header == "function") {
+         this.callbacks.header(headers);
+       }
 
        if (this.debug)
            console.log("REQUEST: ", options);

@@ -3,7 +3,14 @@ var Braque = require("braque");
 var heroku = new Braque({
   version: "1.0.0",
   routeFile: "./heroku-v1.0.0.json",
-  debug: true
+  debug: true,
+  
+  // Use callbacks to provide access to the request before it is send.
+  callbacks: {
+	  header: function(headers) {
+	  	headers.Accept= "application/vnd.heroku+json; version=3";
+	  }
+	}
 });
 
 // Implements a custom Auth.
