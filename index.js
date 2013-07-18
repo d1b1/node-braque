@@ -274,8 +274,8 @@ var Client = module.exports = function(config) {
            return;
        }
 
-       if (!options.type || "basic|oauth|xauth".indexOf(options.type) === -1)
-           throw new Error("Invalid authentication type, must be 'basic', 'oauth' or 'xauth'.");
+       if (!options.type || "basic|oauth|xauth|custom".indexOf(options.type) === -1)
+           throw new Error("Invalid authentication type, must be 'basic', 'oauth', 'xauth', 'custom'.");
 
        if (options.type == "basic" && (!options.username || !options.password))
            throw new Error("Basic authentication requires both a username and password to be set");
@@ -530,6 +530,13 @@ var Client = module.exports = function(config) {
        if (this.auth) {
            var basic;
            switch (this.auth.type) {
+              case "custom": 
+                   try{
+                     headers.authorization = this.auth.custom(this);
+                   } catch(err) {
+                     header.authorization = "ERROR IN CUSTOM";
+                   }
+                   break;
               case "xauth":
                    // Update the Header with the required elements.
 

@@ -1,8 +1,8 @@
 {
   "name": "braque",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Stephan Smith <Stephan.Smith.BC93@gmail.com>",
-  "description": "Abstracter for external APIs.",
+  "description": "Abstracter for external APIs. (Github, Heroku etc)",
   "repository": {
     "type": "git",
     "url": "http://github.com/d1b1/node-braque.git"
