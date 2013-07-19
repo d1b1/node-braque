@@ -517,6 +517,13 @@ var Client = module.exports = function(config) {
 
        if (hasBody) {
 
+           // Hack to remove the key value when we get a body value.
+           // This allows us to have a more open body process. The heroku 
+           // PATCH does not play well with a traditional key value option.
+
+           // This solution will wipe other body values in the query.
+           if (query.body) query = query.body;
+           
            if (format == "json")
                query = JSON.stringify(query);
            else
