@@ -32,8 +32,7 @@
 <a name="braque" class="anchor" href="#braque"><span class="octicon octicon-link"></span></a>Braque</h1>
 
 <p>Node.js API abstracter. Provides a simple way to implement and consume any API; github, twitter, etc. This
-project grow out of the patterns in the ajaxorg/node-github project. This projects lets a developer implement
-all or parts of other APIs without the need for more API specific packages.</p>
+project grow out of the patterns in the ajaxorg/node-github project. This projects lets a developer implement all or parts of other APIs without the need for more API specific packages.</p>
 
 <p>Goals:</p>
 
@@ -114,9 +113,7 @@ all or parts of other APIs without the need for more API specific packages.</p>
 
 <p>Callbacks in the API call process are for custom changes needed for specific APIs.</p>
 
-<p>The following is an example of a header callback that will run after the request
-headers have been setup. It will allow the API implimentation to define a value 
-needed by the Heroku API. This might need to get moved to the API route file.</p>
+<p>The following is an example of a header callback that will run after the request headers have been setup. It will allow the API implimentation to define a value needed by the Heroku API. This might need to get moved to the API route file.</p>
 
 <pre><code>  var heroku = new Braque({
     version: "2.0.0",
@@ -150,21 +147,15 @@ needed by the Heroku API. This might need to get moved to the API route file.</p
 </ol><h3>
 <a name="route-file-format" class="anchor" href="#route-file-format"><span class="octicon octicon-link"></span></a>Route file format</h3>
 
-<p>The route file provides the glue for any API abstraction. It tells braque about the endpoint infomation, protocal
-validation requirements and finally the routes. The code attempts to make separate the API endpoint groups into 
-local groups. It will camelCase all function calls.</p>
+<p>The route file provides the glue for any API abstraction. It tells braque about the endpoint infomation, protocal validation requirements and finally the routes. The code attempts to make separate the API endpoint groups into local groups. It will camelCase all function calls.</p>
 
 <p>For example 'pull-requests/get-all' becomes github.pullRequest.getAll();</p>
 
 <h3>
 <a name="attribution" class="anchor" href="#attribution"><span class="octicon octicon-link"></span></a>Attribution</h3>
 
-<p>This project grew out of the work on several other projects; node-ci and its implementations of the node-github project and 
-the formagg.io API. I needed the ability to implement our API in client consumer applications. We needed to have a consistent 
-authentication pattern, error handling and documentation. The node.js github API project provided the pattern. It provides
-a node developer with a simple pattern to use when there is a need to integrate github into an larger feature set. The node-ci
-server needed the ability to interact with specific portions of the github api. Once I started work on the formagg.io the github
-pattern was a logic place to start.</p>
+<p>This project grew out of the work on several other projects; node-ci and its implementations of the node-github project and the formagg.io API. I needed the ability to implement our API in client consumer applications. We needed
+to have a consistent authentication pattern, error handling and documentation. The node.js github API project provided the pattern. It provides a node developer with a simple pattern to use when there is a need to integrate github into an larger feature set. The node-ci server needed the ability to interact with specific portions of the github api. Once I started work on the formagg.io the github pattern was a logic place to start.</p>
 
 <p>Thanks [ajaxorg]<a href="https://github.com/ajaxorg">https://github.com/ajaxorg</a></p>
       </section>
