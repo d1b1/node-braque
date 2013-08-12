@@ -105,6 +105,11 @@ needed by the Heroku API. This might need to get moved to the API route file.
 5. Code assists. Looking for a way to generate local docs files to speed up development.
 6. Review the way the code handles APIs that expect query values. 
 7. Swagger Route file generator.
+8. Add docs for the 'file' parameter type. 
+9. Add better output for params.
+10. Fix the GET method to allow the auto addition of URL query values when the path includes existing query values. Makes it easier to package GET calls.
+11. Adding the Formagg.io Cheese API route file.
+12. Add a sample site to outline documentation and usage and promote the abstraction and the artist.
 
 ### Route file format
 The route file provides the glue for any API abstraction. It tells braque about the endpoint infomation, protocal
