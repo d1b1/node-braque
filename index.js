@@ -30,9 +30,9 @@ var Client = module.exports = function(config) {
 
              var funcName = Util.toCamelCase(fnName);
 
-             newAPI[funcName] = function(msg, block, callback) {
+             newAPI[funcName] = function(msg, block, extras, callback) {
                var self = this;
-               this.client.httpSend(msg, block, function(err, res) {
+               this.client.httpSend(msg, block, extras, function(err, res) {
                    if (err) return self.sendError(err, null, msg, callback);
 
                    var ret;
@@ -158,6 +158,13 @@ var Client = module.exports = function(config) {
                                paramName + "': " + msg[paramName] + " is NaN");
                        }
                    }
+                   else if (type == "file") {
+                       // value = parseFloat(value);
+                       // if (isNaN(value)) {
+                       //     throw new error.BadRequest("Invalid value for parameter '" +
+                       //         paramName + "': " + msg[paramName] + " is NaN");
+                       // }
+                   }
                    else if (type == "json") {
                        if (typeof value == "string") {
                            try {
@@ -217,7 +224,13 @@ var Client = module.exports = function(config) {
                        };
                    }
 
-                   self[section][funcName] = function(msg, callback) {
+                   // Note:
+                   // Arguments for API calls
+                   //  1. msg (({}) - key value fail for data.
+                   //  2. extras (Optional) - provides route to pass in extra options.
+                   //  3. callback (Required) - Provides the callback function.
+
+                   self[section][funcName] = function(msg, extras, callback) {
                        try {
                            parseParams(msg, block.params);
                        }
@@ -231,7 +244,18 @@ var Client = module.exports = function(config) {
                            return;
                        }
 
-                       api[section][funcName].call(api, msg, block, callback);
+                       // Extras is optional, and allows the user to pass in local
+                       // scope and overrides for sigining. For example pass in 
+                       // session for us in the signing code.
+
+                       // SSMITH - Do not pass a function callback for the extras
+                       // as it will f things up.
+                       if (typeof extras == 'function') {
+                         callback = extras;
+                         extras = {};
+                       }
+
+                       api[section][funcName].call(api, msg, block, extras, callback);
                    };
                }
                else {
@@ -358,7 +382,7 @@ var Client = module.exports = function(config) {
            method: "GET",
            params: parsedUrl.query
        };
-       this.httpSend(parsedUrl.query, block, function(err, res) {
+       this.httpSend(parsedUrl.query, block, extras, function(err, res) {
            if (err)
                return api.sendError(err, null, parsedUrl.query, callback);
 
@@ -457,8 +481,8 @@ var Client = module.exports = function(config) {
                }
            }
            else
-               val = valFormat == "json" ? msg[paramName] : encodeURIComponent(msg[paramName]);
-
+              val = valFormat == "json" ? msg[paramName] : encodeURIComponent(msg[paramName]);
+  
            if (isUrlParam) {
                url = url.replace(":" + paramName, val);
            }
@@ -478,13 +502,16 @@ var Client = module.exports = function(config) {
     *      - msg (Object): parameters to send as the request body
     *      - block (Object): parameter definition from the `routes.json` file that
     *          contains validation rules
+    *      - extras (Object): parameters to give access to extra data; session etc.
     *      - callback (Function): function to be called when the request returns.
     *          If the the request returns with an error, the error is passed to
     *          the callback as its first argument (NodeJS-style).
     *
     *  Send an HTTP request to the server and pass the result to a callback.
+    *  
     **/
-   this.httpSend = function(msg, block, callback) {
+   this.httpSend = function(msg, block, extras, callback) {
+
        var method = block.method.toLowerCase();
        var hasBody = ("head|get|delete".indexOf(method) === -1);
        var format = hasBody && this.constants.requestFormat
@@ -524,15 +551,42 @@ var Client = module.exports = function(config) {
            // This solution will wipe other body values in the query.
            if (query.body) query = query.body;
            
+           //-----------------------------------------
+           // This hack handles the header for when we need to put in 
+           // this is a hack and needs to be handled better.
+
+           var form = null;
+           if (query.files) {
+              var FormData   = require('form-data');
+              var fs = require('fs');
+              form = new FormData();
+
+              _.each(query.files, function(val, key) {
+                console.log('file opt', key, val);
+                // TODO: check the format of the val this might cause an error
+                form.append(key, fs.createReadStream(val));
+              });
+
+              delete query.files;
+              // Remove the files so they do not get attached to the body.
+           }
+
+           //-----------------------------------------
+
            if (format == "json")
                query = JSON.stringify(query);
            else
                query = query.join("&");
 
-           headers["content-length"] = query.length;
-           headers["content-type"] = format == "json"
-               ? "application/json"
-               : "application/x-www-form-urlencoded";
+           if (form) {
+             // Set the header from form.
+             headers = form.getHeaders()
+           } else {
+             headers["content-length"] = query.length;
+             headers["content-type"] = format == "json"
+                 ? "application/json"
+                 : "application/x-www-form-urlencoded";
+           }
        }
 
        if (this.auth) {
@@ -540,9 +594,9 @@ var Client = module.exports = function(config) {
            switch (this.auth.type) {
               case "custom": 
                    try{
-                     headers.authorization = this.auth.custom(this);
+                     headers.authorization = this.auth.custom(this, method, fullUrl, extras);
                    } catch(err) {
-                     header.authorization = "ERROR IN CUSTOM";
+                     headers.authorization = "ERROR IN CUSTOM";
                    }
                    break;
               case "xauth":
@@ -665,12 +719,20 @@ var Client = module.exports = function(config) {
            callback(e.message);
        });
 
-       // write data to request body
-       if (hasBody && query.length) {
-           if (self.debug)
-               console.log("REQUEST BODY: " + query + "\n");
-           req.write(query + "\n");
+       if (form) {
+         console.log('ddddddddddddd')
+         form.pipe(req);
+       } else {
+
+         // write data to request body
+         if (hasBody && query.length) {
+             if (self.debug)
+                 console.log("REQUEST BODYTT: " + query + "\n");
+             req.write(query + "\n");
+         }
+
+         req.end();      
        }
-       req.end();
+
    };
 }).call(Client.prototype);

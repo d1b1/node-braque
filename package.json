@@ -1,7 +1,10 @@
 {
   "name": "braque",
   "version": "1.0.4",
-  "author": "Stephan Smith <Stephan.Smith.BC93@gmail.com>",
+  "author": {
+    "name": "Stephan Smith",
+    "email": "Stephan.Smith.BC93@gmail.com"
+  },
   "description": "Abstracter for external APIs. (Github, Heroku etc)",
   "repository": {
     "type": "git",
