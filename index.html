@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Node-braque by d1b1</title>
+    <title>Braque by d1b1</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -15,7 +15,7 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Node-braque</h1>
+        <h1>Braque</h1>
         <p>Node.js API abstracter. Provides a simple way to implement and consume any API; github, twitter, etc.</p>
 
         <p class="view"><a href="https://github.com/d1b1/node-braque">View the Project on GitHub <small>d1b1/node-braque</small></a></p>
@@ -28,37 +28,145 @@
         </ul>
       </header>
       <section>
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+        <h1>
+<a name="braque" class="anchor" href="#braque"><span class="octicon octicon-link"></span></a>Braque</h1>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>Node.js API abstracter. Provides a simple way to implement and consume any API; github, twitter, etc. This
+project grow out of the patterns in the ajaxorg/node-github project. This projects lets a developer implement
+all or parts of other APIs without the need for more API specific packages.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<p>Goals:</p>
+
+<ul>
+<li>Fewer API specific NPM dependencies.</li>
+<li>Standardized HTTP/HTTPS best practices for external APIs.</li>
+<li>Easier to share API version with consumers.</li>
+<li>Smaller codebases on Heroku.</li>
+</ul><h3>
+<a name="available-apis" class="anchor" href="#available-apis"><span class="octicon octicon-link"></span></a>Available APIs</h3>
+
+<p>The following is a list of APIs available in in the APIS folder.</p>
+
+<ul>
+<li>Github v 3.0 API</li>
+<li>Twitter v 1.1 API</li>
+</ul><p>If you have an API file to add feel free to email or make a pull request.</p>
+
+<h3>
+<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h3>
+
+<p>To install this package use the following</p>
+
+<pre><code>  npm install braque
+
+  or 
+
+  npm install git@github.com:d1b1/node-braque.git#master
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<h3>
+<a name="implementation-of-github" class="anchor" href="#implementation-of-github"><span class="octicon octicon-link"></span></a>Implementation of Github</h3>
+
+<p>The following is an example of how to implement the github API using the sample route file.</p>
+
+<p>Simple version using no Authentication.</p>
+
+<pre><code>  var Braque = require('braque');
+
+  var github = new Braque({
+    version: '3.0.0',
+    routeFile: './apis/github-v3.0.0.json',
+  });
+
+  github.repos.get( { user: 'd1b1', 'node-braque' }, function(err, repo) {
+    if (err) return console.log(err);
+
+    console.log(repo);
+  });
+
+</code></pre>
+
+<p>With Username and Password Authentcation.</p>
+
+<pre><code>  var Braque = require('braque');
+
+  var github = new Braque({
+    version: '3.0.0',
+    routeFile: './apis/github-v3.0.0.json',
+  });
+
+  github.authenticate({
+    type: "basic",
+    username: 'XXXXXXXXXX',
+    password: 'XXXXXXXXXX'
+  });
+
+  github.repos.get( { user: 'd1b1', 'node-braque' }, function(err, repo) {
+    if (err) return console.log(err);
+
+    console.log(repo);
+  });
+
+</code></pre>
 
 <h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<a name="request-callbacks" class="anchor" href="#request-callbacks"><span class="octicon octicon-link"></span></a>Request Callbacks</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>Callbacks in the API call process are for custom changes needed for specific APIs.</p>
+
+<p>The following is an example of a header callback that will run after the request
+headers have been setup. It will allow the API implimentation to define a value 
+needed by the Heroku API. This might need to get moved to the API route file.</p>
+
+<pre><code>  var heroku = new Braque({
+    version: "2.0.0",
+    routeFile: "./heroku/heroku.json",
+
+    // Use callbacks to provide access to the request before it is send.
+    callbacks: {
+      header: function(headers) {
+        headers.Accept= "application/vnd.heroku+json; version=3";
+      }
+    }
+  });
+</code></pre>
 
 <h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<a name="coming-soon" class="anchor" href="#coming-soon"><span class="octicon octicon-link"></span></a>Coming Soon</h3>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<ol>
+<li>Adding the twitter routes file.</li>
+<li>Adding the google geocoder routes file.</li>
+<li>Abstracting the Auth pattern to allow for custom Auth Handlers.</li>
+<li>Tests</li>
+<li>Code assists. Looking for a way to generate local docs files to speed up development.</li>
+<li>Review the way the code handles APIs that expect query values. </li>
+<li>Swagger Route file generator.</li>
+<li>Add docs for the 'file' parameter type. </li>
+<li>Add better output for params.</li>
+<li>Fix the GET method to allow the auto addition of URL query values when the path includes existing query values. Makes it easier to package GET calls.</li>
+<li>Adding the Formagg.io Cheese API route file.</li>
+<li>Add a sample site to outline documentation and usage and promote the abstraction and the artist.</li>
+</ol><h3>
+<a name="route-file-format" class="anchor" href="#route-file-format"><span class="octicon octicon-link"></span></a>Route file format</h3>
+
+<p>The route file provides the glue for any API abstraction. It tells braque about the endpoint infomation, protocal
+validation requirements and finally the routes. The code attempts to make separate the API endpoint groups into 
+local groups. It will camelCase all function calls.</p>
+
+<p>For example 'pull-requests/get-all' becomes github.pullRequest.getAll();</p>
 
 <h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<a name="attribution" class="anchor" href="#attribution"><span class="octicon octicon-link"></span></a>Attribution</h3>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>This project grew out of the work on several other projects; node-ci and its implementations of the node-github project and 
+the formagg.io API. I needed the ability to implement our API in client consumer applications. We needed to have a consistent 
+authentication pattern, error handling and documentation. The node.js github API project provided the pattern. It provides
+a node developer with a simple pattern to use when there is a need to integrate github into an larger feature set. The node-ci
+server needed the ability to interact with specific portions of the github api. Once I started work on the formagg.io the github
+pattern was a logic place to start.</p>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>Thanks [ajaxorg]<a href="https://github.com/ajaxorg">https://github.com/ajaxorg</a></p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/d1b1">d1b1</a></p>
