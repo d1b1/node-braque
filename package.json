@@ -1,11 +1,11 @@
 {
   "name": "braque",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "author": {
     "name": "Stephan Smith",
     "email": "Stephan.Smith.BC93@gmail.com"
   },
-  "description": "Abstracter for external APIs. (Github, Heroku etc)",
+  "description": "Abstracter for external APIs. (Github, Heroku etc). Provides a simple wrapper for external APIs. Still beta.",
   "repository": {
     "type": "git",
     "url": "http://github.com/d1b1/node-braque.git"
@@ -22,7 +22,8 @@
   "main": ".",
   "dependencies": {
     "underscore": "~1.4.4",
-    "cryptojs": "~2.5.3"
+    "cryptojs": "~2.5.3",
+    "form-data": "~0.1.0"
   },
   "devDependencies": {
     "mocha": "~1.9.0"

@@ -10,6 +10,10 @@ var authUtil = require('./lib/authUtil');
 var customHandler = require('./lib/handler');
 var oauth = require('./lib/oauth').oauth;
 
+// Packages needed for the new file type.
+var FormData  = require('form-data');
+var fs = require('fs');
+
 var Client = module.exports = function(config) {
    this.config = config;
    this.debug = Util.isTrue(config.debug);
@@ -22,7 +26,6 @@ var Client = module.exports = function(config) {
 
    _.each(this.routes, function(api, name) {
      if (name != 'defines') {
-
          var groupName = Util.toCamelCase(name);
 
          var newAPI = module.exports = {};
@@ -46,6 +49,10 @@ var Client = module.exports = function(config) {
 
                    if (!ret) ret = {};
                    if (!ret.meta) ret.meta = {};
+
+                   // TODO: Roll the rate limiting values into the API call to make
+                   // it more transprent when an issue arrises.
+
                    ["x-ratelimit-limit", "x-ratelimit-remaining", "x-oauth-scopes", "link"].forEach(function(header) {
                        if (res.headers[header]) ret.meta[header] = res.headers[header];
                    });
@@ -159,6 +166,10 @@ var Client = module.exports = function(config) {
                        }
                    }
                    else if (type == "file") {
+                       // TODO: Since we are defining a file, we need to 
+                       // check that we have the file path and it resolves to 
+                       // an actual file.
+                       
                        // value = parseFloat(value);
                        // if (isNaN(value)) {
                        //     throw new error.BadRequest("Invalid value for parameter '" +
@@ -557,12 +568,10 @@ var Client = module.exports = function(config) {
 
            var form = null;
            if (query.files) {
-              var FormData   = require('form-data');
-              var fs = require('fs');
               form = new FormData();
 
               _.each(query.files, function(val, key) {
-                console.log('file opt', key, val);
+                // TODO: Add in error checking for missing file paths.
                 // TODO: check the format of the val this might cause an error
                 form.append(key, fs.createReadStream(val));
               });
@@ -580,7 +589,7 @@ var Client = module.exports = function(config) {
 
            if (form) {
              // Set the header from form.
-             headers = form.getHeaders()
+             headers = form.getHeaders();
            } else {
              headers["content-length"] = query.length;
              headers["content-type"] = format == "json"
@@ -594,13 +603,20 @@ var Client = module.exports = function(config) {
            switch (this.auth.type) {
               case "custom": 
                    try{
+                     // TODO: Rethink the way the request options are created,
+                     // so we can pass fewer paramers to the custom option.
                      headers.authorization = this.auth.custom(this, method, fullUrl, extras);
                    } catch(err) {
+                     // TODO: Need to think about throwing a better error state.
                      headers.authorization = "ERROR IN CUSTOM";
                    }
                    break;
               case "xauth":
                    // Update the Header with the required elements.
+
+                   // TODO: Remove this option completely. Provide plugin
+                   // helpers for the auto options. Also think about making
+                   // the auth option defined in the route.json file.
 
                    var params = {
                       oauth_nonce:            authUtil.uid(16),
@@ -714,20 +730,27 @@ var Client = module.exports = function(config) {
 
        req.on("error", function(e) {
            if (self.debug)
-               console.log("problem with request: " + e.message);
+               console.log("Problem with Request: " + e.message);
 
            callback(e.message);
        });
 
+       // Fuckery
+       // Ok this sucks, need to figure a better way to get the headers
+       // handled and added to the request. For now I am adding the form-data
+       // package to the package.json to ensure we have what we need.
+
        if (form) {
-         console.log('ddddddddddddd')
+         // When we have a form (gr) we need to pipe the form
+         // to the req. Need to rethink this.
+
          form.pipe(req);
        } else {
 
          // write data to request body
          if (hasBody && query.length) {
              if (self.debug)
-                 console.log("REQUEST BODYTT: " + query + "\n");
+                 console.log("REQUEST BODY: " + query + "\n");
              req.write(query + "\n");
          }
 
