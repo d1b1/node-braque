@@ -1,6 +1,10 @@
 Braque
 ===========
 
+[![NPM](https://nodei.co/npm/braque.png?stars&downloads)](https://nodei.co/npm/braque/) 
+[![NPM](https://nodei.co/npm-dl/braque.png)](https://nodei.co/npm/braque/)
+
+
 Node.js API abstracter. Provides a simple way to implement and consume any API; github, twitter, etc. This
 project grow out of the patterns in the ajaxorg/node-github project. This projects lets a developer implement
 all or parts of other APIs without the need for more API specific packages.
