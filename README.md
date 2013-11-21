@@ -43,7 +43,13 @@ Simple version using no Authentication.
     routeFile: './apis/github-v3.0.0.json',
   });
 
-  github.repos.get( { user: 'd1b1', 'node-braque' }, function(err, repo) {
+  // Auth Object is object that will be passed to the 
+  // authentication function. When working with express
+  // and passport, used req.user. Your auth function can
+  // then sign or alter the header to comply with the
+  // designer endpoint authentication strategy.
+
+  github.repos.get( { user: 'd1b1', 'node-braque' }, req.user, function(err, repo) {
     if (err) return console.log(err);
 
     console.log(repo);
@@ -75,6 +81,58 @@ With Username and Password Authentcation.
 
 ```
 
+Custom Authentication Callback - When an API needs to specific signing or
+header values, this is the approach to use. Set the 
+
+```
+  var Braque = require('braque');
+
+  var github = new Braque({
+    version: '3.0.0',
+    routeFile: './apis/github-v3.0.0.json',
+  });
+
+  github.authenticate({
+    type: "custom",
+
+    /*
+       This function runs after the request is build, but
+       before it is transmitted. This provides for a late
+       change to the header. 
+
+       @Arguments:
+
+        - api (Object) Self reference to generated API.
+        - method (String) REST METHOD (get, post, put, delete etc)
+        - url (String) Request URL
+        - extras (String/Object): API call specific data that may be needed 
+          in the auth callback. For example: User Profile 
+          and/or Token Information.
+
+        @return (String)
+
+        @TODO This function needs to be rebuild
+        to pass in the header and full request and
+        all the function to change anything, data, url
+        or header values. Currently only returns a value
+        for Header.Authentication. 
+    */
+
+    custom: function(api, method, url, extras) {
+      // Your Signing code.
+
+      return 'aValue'
+    }
+  });
+
+  github.repos.get( { user: 'd1b1', 'node-braque' }, req.user, function(err, repo) {
+    if (err) return console.log(err);
+    
+    console.log(repo);
+  });
+
+```
+
 ### Request Callbacks
 Callbacks in the API call process are for custom changes needed for specific APIs.
 
@@ -94,6 +152,24 @@ needed by the Heroku API. This might need to get moved to the API route file.
       }
     }
   });
+```
+
+### Error
+Braque assumes either a string or an stringified error message. The error object contains a parsed version of the 
+response when an error code is received. This provides the ability to send and manage json validation or error message. 
+This is designed to keep the API callback dry and easy to read. 
+
+
+```
+  myAPI.user.get({ id: 1111}, auth, function(err, User) {
+     if (err) 
+       console.log(err.data)
+
+     // err data  = JSON object. 
+
+     console.log(User)
+  })
+
 ```
 
 ### Coming Soon
