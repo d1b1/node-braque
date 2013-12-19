@@ -1,6 +1,6 @@
 {
   "name": "braque",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "author": {
     "name": "Stephan Smith",
     "email": "Stephan.Smith.BC93@gmail.com"
@@ -23,7 +23,8 @@
   "dependencies": {
     "underscore": "~1.4.4",
     "cryptojs": "~2.5.3",
-    "form-data": "~0.1.0"
+    "form-data": "~0.1.0",
+    "coding": "git://github.com/d1b1/node-json-coding.git#master"
   },
   "devDependencies": {
     "mocha": "~1.9.0"

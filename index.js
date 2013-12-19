@@ -9,6 +9,7 @@ var Util     = require('./lib/util');
 var authUtil = require('./lib/authUtil');
 var customHandler = require('./lib/handler');
 var oauth = require('./lib/oauth').oauth;
+var coding = require('coding')
 
 // Packages needed for the new file type.
 var FormData  = require('form-data');
@@ -548,10 +549,12 @@ var Client = module.exports = function(config) {
        var fullUrl = protocol + '://' + host + path;
 
        var headers = {
-           "host": host,
            "user-agent": "NodeJS HTTP Client",
            "content-length": "0"
-       };
+       }
+
+       // Uses the coding to convert the query to escaped strings.
+       query = coding.encode(query)
 
        if (hasBody) {
 
