@@ -549,11 +549,10 @@ var Client = module.exports = function(config) {
        var fullUrl = protocol + '://' + host + path;
 
        var headers = {
-           "user-agent": "NodeJS HTTP Client",
-           "content-length": "0"
+           "host": host,
+           "user-agent": "NodeJS HTTP Client"
        }
 
-       // Uses the coding to convert the query to escaped strings.
        query = coding.encode(query)
 
        if (hasBody) {
@@ -592,7 +591,7 @@ var Client = module.exports = function(config) {
 
            if (form) {
              // Set the header from form.
-             headers = form.getHeaders();
+             headers = _.extend(form.getHeaders(), headers)
            } else {
              headers["content-length"] = query.length;
              headers["content-type"] = format == "json"
@@ -706,16 +705,19 @@ var Client = module.exports = function(config) {
            console.log("REQUEST: ", options);
 
        var self = this;
+
        var req = require(protocol).request(options, function(res) {
            if (self.debug) {
                console.log("STATUS: " + res.statusCode);
                console.log("HEADERS: " + JSON.stringify(res.headers));
            }
-           res.setEncoding("utf8");
-           var data = "";
+           res.setEncoding("utf8")
+
+           var data = '';
            res.on("data", function(chunk) {
                data += chunk;
-           });
+           })
+
            res.on("end", function() {
                if (res.statusCode >= 400 && res.statusCode < 600 || res.statusCode < 10) {
                    callback(new error.HttpError(data, res.statusCode));
@@ -724,14 +726,14 @@ var Client = module.exports = function(config) {
                    res.data = data;
                    callback(null, res);
                }
-           });
-       });
+           })
+       })
 
        if (this.config.timeout) {
            req.setTimeout(this.config.timeout);
        }
 
-       req.on("error", function(e) {
+       req.on('error', function(e) {
            if (self.debug)
                console.log("Problem with Request: " + e.message);
 
@@ -749,7 +751,6 @@ var Client = module.exports = function(config) {
 
          form.pipe(req);
        } else {
-
          // write data to request body
          if (hasBody && query.length) {
              if (self.debug)
