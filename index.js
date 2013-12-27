@@ -553,7 +553,9 @@ var Client = module.exports = function(config) {
            "user-agent": "NodeJS HTTP Client"
        }
 
-       query = coding.encode(query)
+       var encode = this.config['encode'] || false
+       if (encode)
+         query = coding.encode(query)
 
        if (hasBody) {
 

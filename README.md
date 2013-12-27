@@ -90,6 +90,7 @@ header values, this is the approach to use. Set the
   var github = new Braque({
     version: '3.0.0',
     routeFile: './apis/github-v3.0.0.json',
+    encode: true // Defauts to false. Escapes all body data. Requires reverse other end.
   });
 
   github.authenticate({
