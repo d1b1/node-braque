@@ -167,10 +167,10 @@ var Client = module.exports = function(config) {
                        }
                    }
                    else if (type == "file") {
-                       // TODO: Since we are defining a file, we need to 
-                       // check that we have the file path and it resolves to 
+                       // TODO: Since we are defining a file, we need to
+                       // check that we have the file path and it resolves to
                        // an actual file.
-                       
+
                        // value = parseFloat(value);
                        // if (isNaN(value)) {
                        //     throw new error.BadRequest("Invalid value for parameter '" +
@@ -257,7 +257,7 @@ var Client = module.exports = function(config) {
                        }
 
                        // Extras is optional, and allows the user to pass in local
-                       // scope and overrides for sigining. For example pass in 
+                       // scope and overrides for sigining. For example pass in
                        // session for us in the signing code.
 
                        // SSMITH - Do not pass a function callback for the extras
@@ -494,7 +494,7 @@ var Client = module.exports = function(config) {
            }
            else
               val = valFormat == "json" ? msg[paramName] : encodeURIComponent(msg[paramName]);
-  
+
            if (isUrlParam) {
                url = url.replace(":" + paramName, val);
            }
@@ -520,7 +520,7 @@ var Client = module.exports = function(config) {
     *          the callback as its first argument (NodeJS-style).
     *
     *  Send an HTTP request to the server and pass the result to a callback.
-    *  
+    *
     **/
    this.httpSend = function(msg, block, extras, callback) {
 
@@ -560,14 +560,14 @@ var Client = module.exports = function(config) {
        if (hasBody) {
 
            // Hack to remove the key value when we get a body value.
-           // This allows us to have a more open body process. The heroku 
+           // This allows us to have a more open body process. The heroku
            // PATCH does not play well with a traditional key value option.
 
            // This solution will wipe other body values in the query.
            if (query.body) query = query.body;
-           
+
            //-----------------------------------------
-           // This hack handles the header for when we need to put in 
+           // This hack handles the header for when we need to put in
            // this is a hack and needs to be handled better.
 
            var form = null;
@@ -602,14 +602,25 @@ var Client = module.exports = function(config) {
            }
        }
 
+       // Moved this up so we could override all the
+       // values with hooks.
+
+       var options = {
+           host: host,
+           port: port,
+           path: path,
+           method: method,
+           headers: headers
+       };
+
        if (this.auth) {
            var basic;
            switch (this.auth.type) {
-              case "custom": 
+              case "custom":
                    try{
                      // TODO: Rethink the way the request options are created,
                      // so we can pass fewer paramers to the custom option.
-                     headers.authorization = this.auth.custom(this, method, fullUrl, extras);
+                     headers.authorization = this.auth.custom(this, method, fullUrl, extras, options);
                    } catch(err) {
                      // TODO: Need to think about throwing a better error state.
                      headers.authorization = "ERROR IN CUSTOM";
@@ -627,22 +638,22 @@ var Client = module.exports = function(config) {
                       oauth_timestamp:        authUtil.getTime(),
                       oauth_version:          '1.0',
                       oauth_consumer_key:     this.auth.consumer_key,
-                      oauth_signature_method: 'HMAC-SHA1',      
+                      oauth_signature_method: 'HMAC-SHA1',
                    };
 
-                    if (this.auth.token) { 
+                    if (this.auth.token) {
                       params.oauth_token = this.auth.token;
                     }
 
-                    var options = { 
-                      method: method, 
-                      url: fullUrl, 
+                    var options = {
+                      method: method,
+                      url: fullUrl,
                       consumerSecret: this.auth.consumer_secret  // Never shared. Only part of the signing process.
                     };
 
                     if (this.auth.token_secret) {
                       options.tokenSecret = this.auth.token_secret;
-                    }                    
+                    }
 
                     var authDict = {};
                     if (params.oauth_token) {
@@ -654,7 +665,7 @@ var Client = module.exports = function(config) {
                     authDict['oauth_nonce']            = params.oauth_nonce;
                     authDict['oauth_timestamp']        = params.oauth_timestamp;
 
-                    if (params.access_token && params.access_token_secret) { 
+                    if (params.access_token && params.access_token_secret) {
                       authDict.oauth_token = params.access_token;
                       authDict.oauth_token_secret = params.access_token_secret;
                     }
@@ -662,7 +673,7 @@ var Client = module.exports = function(config) {
                     // Sign the header.
                     authDict['oauth_signature']        = authUtil.signRequest(params, options);
 
-                    var paramArray = _.map(authDict, 
+                    var paramArray = _.map(authDict,
                         function convertPairTo2ElementArray(value, key) {
                             return [key, value];
                         });
@@ -690,13 +701,13 @@ var Client = module.exports = function(config) {
            }
        }
 
-       var options = {
-           host: host,
-           port: port,
-           path: path,
-           method: method,
-           headers: headers
-       };
+      //  var options = {
+      //      host: host,
+      //      port: port,
+      //      path: path,
+      //      method: method,
+      //      headers: headers
+      //  };
 
        // If we have a header callback.
        if (this.callbacks && typeof this.callbacks.header == "function") {
@@ -760,7 +771,7 @@ var Client = module.exports = function(config) {
              req.write(query + "\n");
          }
 
-         req.end();      
+         req.end();
        }
 
    };
