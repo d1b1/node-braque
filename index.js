@@ -49,14 +49,16 @@ var Client = module.exports = function(config) {
                    }
 
                    if (!ret) ret = {};
-                   if (!ret.meta) ret.meta = {};
+                   if (typeof ret ==="object") {
+                     if (!ret.meta) ret.meta = {};
 
-                   // TODO: Roll the rate limiting values into the API call to make
-                   // it more transprent when an issue arrises.
+                     // TODO: Roll the rate limiting values into the API call to make
+                     // it more transprent when an issue arrises.
 
-                   ["x-ratelimit-limit", "x-ratelimit-remaining", "x-oauth-scopes", "link"].forEach(function(header) {
-                       if (res.headers[header]) ret.meta[header] = res.headers[header];
-                   });
+                     ["x-ratelimit-limit", "x-ratelimit-remaining", "x-oauth-scopes", "link"].forEach(function(header) {
+                         if (res.headers[header]) ret.meta[header] = res.headers[header];
+                     });
+                   }
                    if (callback) callback(null, ret);
                });
            };
